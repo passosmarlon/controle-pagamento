@@ -17,8 +17,8 @@ public class ClienteController {
 
     @PostMapping
     public ResponseEntity<ClienteDTO> save(@RequestBody ClienteDTO data) {
-        service.saveCliente(data);
-        return ResponseEntity.ok(data);
+            service.saveCliente(data);
+            return ResponseEntity.ok(data);
     }
 
     @GetMapping

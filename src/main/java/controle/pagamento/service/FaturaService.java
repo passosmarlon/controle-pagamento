@@ -5,6 +5,7 @@ import controle.pagamento.entity.Cliente;
 import controle.pagamento.entity.Fatura;
 import controle.pagamento.entity.Pagamento;
 import controle.pagamento.entity.StatusFatura;
+import controle.pagamento.exceptions.IdInvalidoException;
 import controle.pagamento.mapper.FaturaMapper;
 import controle.pagamento.mapper.FaturaUpdate;
 import controle.pagamento.repositories.ClienteRepository;
@@ -29,7 +30,7 @@ public class FaturaService {
 
     public Fatura saveFatura(FaturaDTO data) {
         Cliente cliente = clienteRepository.findById(data.clienteId())
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(IdInvalidoException::new);
         Fatura fatura = mapper.toEntity(data);
         fatura.setCliente(cliente);
 
@@ -65,7 +66,7 @@ public class FaturaService {
     @Transactional
     public Fatura updateFatura(FaturaDTO data) {
         Fatura fatura = repository.findById(data.id())
-                .orElseThrow(() -> new RuntimeException("Fatura não encontrada"));
+                .orElseThrow(IdInvalidoException::new);
 
         mapperUpdate.updateFatura(data, fatura);
         return repository.save(fatura);

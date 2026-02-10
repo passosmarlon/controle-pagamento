@@ -2,6 +2,8 @@ package controle.pagamento.service;
 
 import controle.pagamento.entity.Pagamento;
 import controle.pagamento.entity.StatusFatura;
+import controle.pagamento.exceptions.PagamentoInvalidoException;
+import controle.pagamento.exceptions.PagamentoNegativoException;
 import controle.pagamento.repositories.PagamentoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,9 @@ public class DadosPagamento {
         BigDecimal credito = data.getFatura().getValeCredito();
 
         if (getPagamento == null || getSaldo == null) {
-            return;
+            throw new PagamentoInvalidoException();
+        } else if (getPagamento.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new PagamentoNegativoException();
         }
 
         if (getSaldo.compareTo(BigDecimal.ZERO) > 0) {

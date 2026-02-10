@@ -2,13 +2,17 @@ package controle.pagamento.service;
 
 import controle.pagamento.dto.ClienteDTO;
 import controle.pagamento.entity.Cliente;
+import controle.pagamento.exceptions.IdInvalidoException;
+import controle.pagamento.exceptions.PagamentoInvalidoException;
 import controle.pagamento.mapper.ClienteMapper;
 import controle.pagamento.mapper.ClienteUpdate;
 import controle.pagamento.repositories.ClienteRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -25,16 +29,18 @@ public class ClienteService {
     }
 
     public List<ClienteDTO> getCliente(){
-        return repository.findAll()
+        return repository.findAll(Sort.by(Sort.Direction.ASC, "nome"))
                 .stream()
                 .map(mapper::toDto)
                 .toList();
+
+
     }
 
     @Transactional
     public Cliente updateCliente(ClienteDTO data) {
         Cliente cliente = repository.findById(data.id())
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(IdInvalidoException::new);
 
         mapperUpdate.updateCliente(data, cliente);
         return repository.save(cliente);
@@ -43,7 +49,7 @@ public class ClienteService {
     @Transactional
     public Cliente desativarCliente(ClienteDTO data) {
         Cliente cliente = repository.findById(data.id())
-                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+                .orElseThrow(IdInvalidoException::new);
 
         mapperUpdate.updateCliente(data, cliente);
         cliente.setActive(false);
@@ -55,6 +61,7 @@ public class ClienteService {
         return repository.findByActiveTrue()
                 .stream()
                 .map(mapper::toDto)
+                .sorted()
                 .toList();
     }
 

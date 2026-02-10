@@ -3,6 +3,7 @@ package controle.pagamento.service;
 import controle.pagamento.dto.DevolucaoDTO;
 import controle.pagamento.entity.Devolucao;
 import controle.pagamento.entity.Fatura;
+import controle.pagamento.exceptions.IdInvalidoException;
 import controle.pagamento.mapper.DevolucaoMapper;
 import controle.pagamento.repositories.DevolucaoRepository;
 import controle.pagamento.repositories.FaturaRepository;
@@ -25,7 +26,7 @@ public class DevolucaoService {
     public Devolucao registerDevolucao(DevolucaoDTO data) {
 
         Fatura fatura = faturaRepository.findById(data.faturaId())
-                .orElseThrow(() -> new RuntimeException("Fatura não encontrada"));
+                .orElseThrow(IdInvalidoException::new);
 
         Devolucao devolucao = mapper.toEntity(data);
         devolucao.setFatura(fatura);

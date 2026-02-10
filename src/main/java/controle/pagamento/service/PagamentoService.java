@@ -3,6 +3,8 @@ package controle.pagamento.service;
 import controle.pagamento.dto.PagamentoDTO;
 import controle.pagamento.entity.Fatura;
 import controle.pagamento.entity.Pagamento;
+import controle.pagamento.exceptions.IdInvalidoException;
+import controle.pagamento.exceptions.PagamentoInvalidoException;
 import controle.pagamento.mapper.PagamentoMapper;
 import controle.pagamento.repositories.FaturaRepository;
 import controle.pagamento.repositories.PagamentoRepository;
@@ -10,6 +12,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -24,7 +27,8 @@ public class PagamentoService {
     @Transactional
     public Pagamento savePagamento(PagamentoDTO data) {
         Fatura fatura = faturaRepository.findById(data.faturaId())
-                .orElseThrow(() -> new RuntimeException("Fatura não encontrada"));
+                .orElseThrow(IdInvalidoException::new);
+
         Pagamento pagamento = mapper.toEntity(data);
         pagamento.setFatura(fatura);
 
@@ -48,7 +52,7 @@ public class PagamentoService {
     @Transactional
     public void deletePagamento(Long id){
         Pagamento pagamento = repository.findById(id)
-                .orElseThrow(()-> new RuntimeException("Id de pagamento não existe"));
+                .orElseThrow(IdInvalidoException::new);
 
         DadosPagamento dados = new DadosPagamento();
 
